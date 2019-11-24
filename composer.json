@@ -1,0 +1,22 @@
+{
+  "name": "tasoft/value-injector",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Thomas Abplanalp",
+      "email": "info@tasoft.ch"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "TASoft\\Util\\" : "src"
+    }
+  },
+  "require" : {
+    "php": "^7.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6"
+  }
+}
