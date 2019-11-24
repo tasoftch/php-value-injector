@@ -26,7 +26,7 @@ namespace TASoft\Util;
 /**
  * The value injector allows your to inject direct property values to an object ignoring the visibility state of the properties.
  * It can get and set properties, also calling methods
- * @package TASoft\Core
+ * @package TASoft\Util
  */
 class ValueInjector
 {
@@ -95,11 +95,9 @@ class ValueInjector
      */
     private function getGetter() {
         if(!$this->_getter) {
-            $obj = $this->getObject();
-            $this->_getter = function($name) use ($obj) {
-                return $obj->$name;
-            };
-            $this->_getter = $this->_getter->bindTo($obj, $this->getObjectContext());
+            $this->_getter = (function($name) {
+                return $this->$name;
+            })->bindTo($this->getObject(), $this->getObjectContext());
         }
         return $this->_getter;
     }
@@ -111,11 +109,9 @@ class ValueInjector
      */
     private function getSetter() {
         if(!$this->_setter) {
-            $obj = $this->getObject();
-            $this->_setter = function($name, $value) use ($obj) {
-                $obj->$name = $value;
-            };
-            $this->_setter = $this->_setter->bindTo($obj, $this->getObjectContext());
+            $this->_setter = (function($name, $value) {
+                $this->$name = $value;
+            })->bindTo($this->getObject(), $this->getObjectContext());
         }
         return $this->_setter;
     }
@@ -127,11 +123,9 @@ class ValueInjector
      */
     private function getCaller() {
         if(!$this->_caller) {
-            $obj = $this->getObject();
-            $this->_caller = function($name, $arguments) use ($obj) {
-                return call_user_func_array([$obj, $name], $arguments);
-            };
-            $this->_caller = $this->_caller->bindTo($obj, $this->getObjectContext());
+            $this->_caller = (function($name, $arguments) {
+                return call_user_func_array([$this, $name], $arguments);
+            })->bindTo($this->getObject(), $this->getObjectContext());
         }
         return $this->_caller;
     }
