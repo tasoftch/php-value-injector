@@ -23,6 +23,10 @@
 
 namespace TASoft\Util;
 
+use Closure;
+use InvalidArgumentException;
+use Throwable;
+
 /**
  * The value injector allows your to inject direct property values to an object ignoring the visibility state of the properties.
  * It can get and set properties, also calling methods
@@ -36,21 +40,22 @@ class ValueInjector
     /** @var string */
     private $objectContext;
 
-    /** @var \Closure */
+    /** @var Closure */
     private $_getter;
-    /** @var \Closure */
+    /** @var Closure */
     private $_setter;
-    /** @var \Closure */
+    /** @var Closure */
     private $_caller;
 
     /**
      * Pass the object you want to inject values.
      * @param object $object
+     * @param string $objectContext
      */
-    public function __construct($object = NULL)
+    public function __construct($object = NULL, $objectContext = NULL)
     {
         if(is_object($object))
-            $this->setObject($object);
+            $this->setObject($object, $objectContext);
     }
 
     /**
@@ -81,7 +86,7 @@ class ValueInjector
     public function setObject($object, string $context = NULL): void
     {
         if(!is_object($object))
-            throw new \InvalidArgumentException("Argument 1 passed to setValue must be an object");
+            throw new InvalidArgumentException("Argument 1 passed to setValue must be an object");
 
         $this->object = $object;
         $this->objectContext = $context ?? get_class($object);
@@ -90,7 +95,7 @@ class ValueInjector
 
     /**
      * Creates the getter closure
-     * @return \Closure
+     * @return Closure
      * @internal
      */
     private function getGetter() {
@@ -104,7 +109,7 @@ class ValueInjector
 
     /**
      * Creates the setter closure
-     * @return \Closure
+     * @return Closure
      * @internal
      */
     private function getSetter() {
@@ -118,7 +123,7 @@ class ValueInjector
 
     /**
      * Creates the caller closure
-     * @return \Closure
+     * @return Closure
      * @internal
      */
     private function getCaller() {
@@ -155,11 +160,11 @@ class ValueInjector
     /**
      * Runs a closure in the object's context and using the object as $this variable.
      *
-     * @param \Closure $closure
+     * @param Closure $closure
      * @param mixed ...$args
      * @return mixed
      */
-    public function run(\Closure $closure, ...$args) {
+    public function run(Closure $closure, ...$args) {
         $closure = $closure->bindTo($this->getObject(), $this->getObjectContext());
         return call_user_func_array($closure, $args);
     }
@@ -167,14 +172,14 @@ class ValueInjector
     /**
      * Binds a closure to the object's context and using the object as $this variable.
      *
-     * @param \Closure $closure
+     * @param Closure $closure
      * @return bool
      */
-    public function bind(\Closure &$closure): bool {
+    public function bind(Closure &$closure): bool {
         try {
             $closure = $closure->bindTo($this->getObject(), $this->getObjectContext());
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
