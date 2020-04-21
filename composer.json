@@ -1,7 +1,6 @@
 {
   "name": "tasoft/value-injector",
   "license": "MIT",
-  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Thomas Abplanalp",
